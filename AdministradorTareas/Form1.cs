@@ -59,6 +59,10 @@ namespace AdministradorTareas
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
                     }
+                    else if (listView1.Items[0].SubItems[1].Text == "Suspended")
+                    {
+                        MessageBox.Show("Esta tarea se encuentra suspendida");
+                    }
                     else
                     {
                         Tarea1.Start();
@@ -74,6 +78,10 @@ namespace AdministradorTareas
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
                     }
+                    else if (listView1.Items[1].SubItems[1].Text == "Suspended")
+                    {
+                        MessageBox.Show("Esta tarea se encuentra suspendida");
+                    }
                     else
                     {
                         Tarea2.Start();
@@ -88,6 +96,10 @@ namespace AdministradorTareas
                     else if (listView1.Items[2].SubItems[1].Text == "Aborted")
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
+                    }
+                    else if (listView1.Items[2].SubItems[1].Text == "Suspended")
+                    {
+                        MessageBox.Show("Esta tarea se encuentra suspendida");
                     }
                     else
                     {
@@ -169,6 +181,10 @@ namespace AdministradorTareas
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
                     }
+                    else if(listView1.Items[0].SubItems[1].Text == "Running")
+                    {
+                        MessageBox.Show("Esta tarea ya esta en ejecucion");
+                    }
                     else
                     {
                         Tarea1.Resume();
@@ -180,6 +196,10 @@ namespace AdministradorTareas
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
                     }
+                    else if (listView1.Items[1].SubItems[1].Text == "Running")
+                    {
+                        MessageBox.Show("Esta tarea ya esta en ejecucion");
+                    }
                     else
                     {
                         Tarea2.Resume();
@@ -190,6 +210,10 @@ namespace AdministradorTareas
                     if (listView1.Items[2].SubItems[1].Text == "Aborted")
                     {
                         MessageBox.Show("Esta tarea ya esta suspendida");
+                    }
+                    else if (listView1.Items[2].SubItems[1].Text == "Running")
+                    {
+                        MessageBox.Show("Esta tarea ya esta en ejecucion");
                     }
                     else
                     {
