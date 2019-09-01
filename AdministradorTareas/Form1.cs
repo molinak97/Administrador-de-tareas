@@ -8,231 +8,251 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
 
 namespace AdministradorTareas
 {
     public partial class Form1 : Form
     {
-        delegate void delegado(int valor);
-        Thread Tarea1, Tarea2, Tarea3;
+        Thread thread1, thread2;
+        private Process[] process;
+        private Queue<Process> colaProcesos;//cola de procesos
 
 
         public Form1()
         {
             InitializeComponent();
-            Tarea1 = new Thread(new ThreadStart(Proceso1));
-            Tarea2 = new Thread(new ThreadStart(Proceso2));
-            Tarea3 = new Thread(new ThreadStart(Proceso3));
-            for (int x = 1; x <= 3; x++)
-            {
-                ListViewItem item = new ListViewItem("Proceso " + x);
-                item.SubItems.Add(Tarea1.ThreadState.ToString());
-                listView1.Items.Add(item);
-            }
-            listView1.Items[0].Selected = true;
-            listView1.Select();
-            Run();
-        }
-        private void Proceso1()
-        {
-            while (true) ;
-        }
-        private void Proceso2()
-        {
-            while (true) ;
-        }
-        private void Proceso3()
-        {
-            while (true) ;
-        }
+            thread1 = new Thread(new ThreadStart(CProceso));
+            thread2 = new Thread(new ThreadStart(CProceso));
+            colaProcesos = new Queue<Process>();
 
-        private void buttonRun_Click(object sender, EventArgs e)
-        {
-            switch (listView1.FocusedItem.Index)
+            process = Process.GetProcesses();
+            foreach (Process p in process)
             {
-                case 0:
-                    if (listView1.Items[0].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else if (listView1.Items[0].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if (listView1.Items[0].SubItems[1].Text == "Suspended")
-                    {
-                        MessageBox.Show("Esta tarea se encuentra suspendida");
-                    }
-                    else
-                    {
-                        Tarea1.Start();
-                        listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
-                    }
-                    break;
-                case 1:
-                    if (listView1.Items[1].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else if (listView1.Items[1].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if (listView1.Items[1].SubItems[1].Text == "Suspended")
-                    {
-                        MessageBox.Show("Esta tarea se encuentra suspendida");
-                    }
-                    else
-                    {
-                        Tarea2.Start();
-                        listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
-                    }
-                    break;
-                case 2:
-                    if (listView1.Items[2].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else if (listView1.Items[2].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if (listView1.Items[2].SubItems[1].Text == "Suspended")
-                    {
-                        MessageBox.Show("Esta tarea se encuentra suspendida");
-                    }
-                    else
-                    {
-                        Tarea3.Start();
-                        listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
-                    }
-                    break;
-                default:
-                    break;
+                colaProcesos.Enqueue(p);//Encolar Procesos
+            }
+            AddProceso();
+            dataGridProceso.Rows[0].Selected = true;//Buscas el inicio 
+            dataGridProceso.Select();//Seleccinas el inicio
+        }
+        private void CProceso()
+        {
+            while (true)
+            Thread.Sleep(100);
+        }
+        private void AddProceso()
+        {
+            Process process = colaProcesos.Dequeue();
+            dataGridProceso.Rows.Add(process.ProcessName, System.Threading.ThreadState.Running);
+        }
+        private void Run(Thread thread)
+        {
+            if (thread.ThreadState == System.Threading.ThreadState.Suspended)
+            {
+                thread.Resume();
+            }
+            else if (thread.ThreadState == System.Threading.ThreadState.WaitSleepJoin)
+            {
+                thread.Resume();
+            }
+            else
+            {
+                thread.Start();
             }
         }
-        private void buttonStop_Click(object sender, EventArgs e)
+        private void Suspend(Thread thread)
         {
-            switch (listView1.FocusedItem.Index)
+            if (thread.ThreadState == System.Threading.ThreadState.Running)
             {
-                case 0:
-                    Tarea1.Abort();
-                    listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
-                    break;
-                case 1:
-                    Tarea2.Abort();
-                    listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
-                    break;
-                case 2:
-                    Tarea2.Start();
-                    listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
-                    break;
-                default:
-                    break;
+                thread.Suspend();
             }
         }
-        private void buttonWait_Click(object sender, EventArgs e)
+        private void Stop(ref Thread thread)
         {
-            switch (listView1.FocusedItem.Index)
-            {
-                case 0:
-                    if (listView1.Items[0].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else
-                    {
-                        Tarea1.Suspend();
-                        listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
-                    }
-                    break;
-                case 1:
-                    if (listView1.Items[1].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else
-                    {
-                        Tarea2.Suspend();
-                        listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
-                    }
-                    break;
-                case 2:
-                    if (listView1.Items[2].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else
-                    {
-                        Tarea3.Suspend();
-                        listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
-                    }
-                    break;
-                default:
-                    break;
-            }
+                thread.Abort();
+                Console.WriteLine(thread.ThreadState);
+                thread = new Thread(new ThreadStart(CProceso));
+                Console.WriteLine(thread.ThreadState);
+
         }
         private void buttonResume_Click(object sender, EventArgs e)
         {
-            switch (listView1.FocusedItem.Index)
-            {
-                case 0:
-                    if (listView1.Items[0].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if(listView1.Items[0].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else
-                    {
-                        Tarea1.Resume();
-                        listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
-                    }
-                    break;
-                case 1:
-                    if (listView1.Items[1].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if (listView1.Items[1].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else
-                    {
-                        Tarea2.Resume();
-                        listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
-                    }
-                    break;
-                case 2:
-                    if (listView1.Items[2].SubItems[1].Text == "Aborted")
-                    {
-                        MessageBox.Show("Esta tarea ya esta suspendida");
-                    }
-                    else if (listView1.Items[2].SubItems[1].Text == "Running")
-                    {
-                        MessageBox.Show("Esta tarea ya esta en ejecucion");
-                    }
-                    else
-                    {
-                        Tarea3.Resume();
-                        listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
-                    }
-                    break;
-                default:
-                    break;
-            }
+            //switch (listView1.FocusedItem.Index)
+            //{
+            //    case 0:
+            //        if (listView1.Items[0].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else if (listView1.Items[0].SubItems[1].Text == "Running")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+            //        }
+            //        else
+            //        {
+            //            Tarea1.Resume();
+            //            listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
+            //        }
+            //        break;
+            //    case 1:
+            //        if (listView1.Items[1].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else if (listView1.Items[1].SubItems[1].Text == "Running")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+            //        }
+            //        else
+            //        {
+            //            Tarea2.Resume();
+            //            listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
+            //        }
+            //        break;
+            //    case 2:
+            //        if (listView1.Items[2].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else if (listView1.Items[2].SubItems[1].Text == "Running")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+            //        }
+            //        else
+            //        {
+            //            Tarea3.Resume();
+            //            listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
-        private void Run()
+        private void buttonWait_Click(object sender, EventArgs e)
         {
-            Tarea1.Start();
-            listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
-            Tarea2.Start();
-            listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
-            Tarea3.Start();
-            listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
+            //switch (listView1.FocusedItem.Index)
+            //{
+            //    case 0:
+            //        if (listView1.Items[0].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else
+            //        {
+            //            Tarea1.Suspend();
+            //            listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
+            //        }
+            //        break;
+            //    case 1:
+            //        if (listView1.Items[1].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else
+            //        {
+            //            Tarea2.Suspend();
+            //            listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
+            //        }
+            //        break;
+            //    case 2:
+            //        if (listView1.Items[2].SubItems[1].Text == "Aborted")
+            //        {
+            //            MessageBox.Show("Esta tarea ya esta suspendida");
+            //        }
+            //        else
+            //        {
+            //            Tarea3.Suspend();
+            //            listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            //switch (listView1.FocusedItem.Index)
+            //{
+            //    case 0:
+            //        Tarea1.Abort();
+            //        listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
+            //        break;
+            //    case 1:
+            //        Tarea2.Abort();
+            //        listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
+            //        break;
+            //    case 2:
+            //        Tarea2.Start();
+            //        listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
+            //        break;
+            //    default:
+            //        break;
+            //}
+        }
+        //private void buttonRun_Click(object sender, EventArgs e)
+        //{
+        //switch (listView1.FocusedItem.Index)
+        //{
+        //    case 0:
+        //        if (listView1.Items[0].SubItems[1].Text == "Running")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+        //        }
+        //        else if (listView1.Items[0].SubItems[1].Text == "Aborted")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta suspendida");
+        //        }
+        //        else if (listView1.Items[0].SubItems[1].Text == "Suspended")
+        //        {
+        //            MessageBox.Show("Esta tarea se encuentra suspendida");
+        //        }
+        //        else
+        //        {
+        //            Tarea1.Start();
+        //            listView1.Items[0].SubItems[1].Text = Tarea1.ThreadState.ToString();
+        //        }
+        //        break;
+        //    case 1:
+        //        if (listView1.Items[1].SubItems[1].Text == "Running")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+        //        }
+        //        else if (listView1.Items[1].SubItems[1].Text == "Aborted")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta suspendida");
+        //        }
+        //        else if (listView1.Items[1].SubItems[1].Text == "Suspended")
+        //        {
+        //            MessageBox.Show("Esta tarea se encuentra suspendida");
+        //        }
+        //        else
+        //        {
+        //            Tarea2.Start();
+        //            listView1.Items[1].SubItems[1].Text = Tarea2.ThreadState.ToString();
+        //        }
+        //        break;
+        //    case 2:
+        //        if (listView1.Items[2].SubItems[1].Text == "Running")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta en ejecucion");
+        //        }
+        //        else if (listView1.Items[2].SubItems[1].Text == "Aborted")
+        //        {
+        //            MessageBox.Show("Esta tarea ya esta suspendida");
+        //        }
+        //        else if (listView1.Items[2].SubItems[1].Text == "Suspended")
+        //        {
+        //            MessageBox.Show("Esta tarea se encuentra suspendida");
+        //        }
+        //        else
+        //        {
+        //            Tarea3.Start();
+        //            listView1.Items[2].SubItems[1].Text = Tarea3.ThreadState.ToString();
+        //        }
+        //        break;
+        //    default:
+        //        break;
+        //}
+        //}
     }
 }
