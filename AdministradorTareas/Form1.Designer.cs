@@ -51,7 +51,7 @@
             // 
             // buttonStop
             // 
-            this.buttonStop.Location = new System.Drawing.Point(291, 136);
+            this.buttonStop.Location = new System.Drawing.Point(416, 136);
             this.buttonStop.Name = "buttonStop";
             this.buttonStop.Size = new System.Drawing.Size(126, 35);
             this.buttonStop.TabIndex = 4;
@@ -61,7 +61,7 @@
             // 
             // buttonWait
             // 
-            this.buttonWait.Location = new System.Drawing.Point(291, 99);
+            this.buttonWait.Location = new System.Drawing.Point(416, 99);
             this.buttonWait.Name = "buttonWait";
             this.buttonWait.Size = new System.Drawing.Size(126, 31);
             this.buttonWait.TabIndex = 5;
@@ -71,7 +71,7 @@
             // 
             // buttonResume
             // 
-            this.buttonResume.Location = new System.Drawing.Point(291, 59);
+            this.buttonResume.Location = new System.Drawing.Point(416, 59);
             this.buttonResume.Name = "buttonResume";
             this.buttonResume.Size = new System.Drawing.Size(126, 34);
             this.buttonResume.TabIndex = 6;
@@ -87,7 +87,7 @@
             this.Estado});
             this.dataGridProceso.Location = new System.Drawing.Point(28, 59);
             this.dataGridProceso.Name = "dataGridProceso";
-            this.dataGridProceso.Size = new System.Drawing.Size(244, 252);
+            this.dataGridProceso.Size = new System.Drawing.Size(311, 252);
             this.dataGridProceso.TabIndex = 7;
             // 
             // Proceso
